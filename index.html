@@ -1,253 +1,461 @@
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora de guardias</title>
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#172033;background:#f4f6fa}
-*{box-sizing:border-box}body{margin:0}header{background:#172b4d;color:#fff;padding:22px 18px}
-header h1{margin:0 0 5px;font-size:1.45rem}header p{margin:0;color:#d9e4f5}
-main{max-width:1200px;margin:22px auto;padding:0 16px 40px}
-.panel{background:#fff;border:1px solid #e1e6ef;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px #172b4d0a}
-.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
-.field{display:flex;flex-direction:column;gap:5px;min-width:170px;flex:1}
-label{font-size:.86rem;font-weight:650;color:#42516a}
-select,input,button{font:inherit;border:1px solid #cbd4e1;border-radius:9px;padding:9px 11px;background:#fff;color:#172033}
-button{cursor:pointer;font-weight:650}button.primary{background:#176b50;color:white;border-color:#176b50}
-button.secondary{background:#eef3f8}
-.note{font-size:.88rem;color:#58677d;line-height:1.45}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:.83rem;color:#526078}
-.key{display:inline-flex;align-items:center;gap:6px}.swatch{width:17px;height:17px;border-radius:5px;border:1px solid #0001}
-.months{display:grid;grid-template-columns:repeat(3,minmax(260px,1fr));gap:14px}
-.month{background:#fff;border:1px solid #e1e6ef;border-radius:13px;padding:12px;min-width:0}
-.month h2{font-size:1rem;margin:2px 0 12px;text-align:center}
-.weekdays,.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.weekdays div{text-align:center;color:#64748b;font-size:.75rem;font-weight:700;padding:4px 0}
-.day{position:relative;min-height:48px;border:1px solid transparent;border-radius:8px;background:#eef1f5;color:#344054;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 1px;cursor:pointer;min-width:0}
-.day .num{font-size:.9rem;font-weight:700;line-height:1.1}
-.day .tag{font-size:.58rem;line-height:1.1;margin-top:3px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;margin:0;background:#f3f5f8;color:#253247}
+header{background:#172b4d;color:white;padding:22px}
+header h1{margin:0 0 6px}
+main{max-width:1150px;margin:20px auto;padding:0 14px}
+.panel{background:white;border:1px solid #e0e5ed;border-radius:12px;padding:16px;margin-bottom:16px}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:170px}
+label{font-size:14px;font-weight:bold}
+input,select,button{padding:10px;border:1px solid #cbd3df;border-radius:8px;font:inherit}
+button{cursor:pointer;background:#edf2f8}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin-top:14px}
+.key{display:flex;align-items:center;gap:5px}
+.swatch{width:16px;height:16px;border-radius:4px}
+.months{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.month{background:white;border:1px solid #e0e5ed;border-radius:12px;padding:12px}
+.month h2{text-align:center;text-transform:capitalize;font-size:17px}
+.weekdays,.days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.weekdays div{text-align:center;font-size:12px;color:#64748b;padding:5px}
+.day{min-width:0;min-height:46px;border:1px solid transparent;border-radius:7px;background:#eef1f5;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 0}
 .day.weekend{background:#dbeafe;color:#1e3a8a}
-.day.holiday{background:#fde68a;color:#78350f;border-color:#f4c84b}
-.day.selected{background:#187653;color:#fff;border-color:#126044}
-.day.selected.holiday,.day.selected.weekend{background:#187653;color:#fff}
-.day.other{visibility:hidden;pointer-events:none}
-.day:focus{outline:3px solid #8ab4f8;outline-offset:1px}
-.summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.metric{background:#f4f7fb;border-radius:10px;padding:12px}
-.metric small{display:block;color:#64748b}.metric strong{font-size:1.35rem}
-table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{text-align:left;padding:9px;border-bottom:1px solid #e8edf3}th{color:#64748b}
-.daylist{max-height:250px;overflow:auto}
-.pill{display:inline-block;background:#edf2f7;border-radius:99px;padding:3px 8px;font-size:.78rem}
-.warning{background:#fff7e6;border:1px solid #f2d28b;padding:10px 12px;border-radius:9px;color:#76520b}
-@media(max-width:900px){.months{grid-template-columns:1fr}.month{max-width:none}.summary-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:520px){main{padding:0 10px 28px}.panel{padding:12px}.summary-grid{grid-template-columns:1fr 1fr}.day{min-height:42px}.day .tag{font-size:.52rem}}
+.day.holiday{background:#fde68a;color:#78350f;border-color:#e9bd39}
+.day.selected{background:#187653;color:white;border-color:#126044}
+.day.other{visibility:hidden}
+.day .num{font-weight:bold}
+.day .tag{font-size:9px}
+.weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.week-card{border:1px solid #e0e5ed;border-radius:9px;padding:12px;background:#fafbfd}
+.week-card strong{display:block;margin-bottom:9px}
+.week-card small{display:block;margin-top:7px;color:#526078}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.metric{background:#f1f5f9;padding:14px;border-radius:9px}
+.metric small{display:block;color:#64748b}
+.metric strong{font-size:24px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px;border-bottom:1px solid #e5eaf0}
+.note{font-size:13px;color:#64748b;line-height:1.5}
+.daylist{overflow-x:auto}
+@media(max-width:850px){.months{grid-template-columns:1fr}}
+@media(max-width:480px){.metrics{grid-template-columns:1fr}.day{min-height:42px}}
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Calculadora de guardias</h1>
-  <p>Calendario de tres meses · selección de días · cálculo orientativo</p>
+<h1>Calculadora de guardias</h1>
+<p>Control semanal de averías y cálculo del Técnico B</p>
 </header>
+
 <main>
-  <section class="panel">
-    <div class="controls">
-      <div class="field">
-        <label for="zone">Zona del calendario</label>
-        <select id="zone">
-          <option>Madrid</option><option>Barcelona</option><option>Galicia</option><option>Valencia</option><option>Bilbao</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="rate">Tramo semanal (pendiente de automatizar por averías)</label>
-        <select id="rate">
-          <option value="225">225 €</option><option value="315">315 €</option>
-          <option value="405" selected>405 €</option><option value="450">450 € (tramo especial)</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="yearMonth">Mes de referencia</label>
-        <input id="yearMonth" type="month">
-      </div>
-      <div class="field">
-        <label for="ics">Importar festivos de esta zona (.ics)</label>
-        <input id="ics" type="file" accept=".ics,text/calendar">
-      </div>
-      <button class="secondary" id="clear">Quitar selecciones</button>
-    </div>
-    <div class="legend">
-      <span class="key"><i class="swatch" style="background:#eef1f5"></i>Laborable</span>
-      <span class="key"><i class="swatch" style="background:#dbeafe"></i>Sábado/domingo</span>
-      <span class="key"><i class="swatch" style="background:#fde68a"></i>Festivo (antes de seleccionar)</span>
-      <span class="key"><i class="swatch" style="background:#187653"></i>Guardia seleccionada</span>
-    </div>
-    <p class="note">Pulsa un día para marcarlo como guardia. Pulsa de nuevo para quitarlo. Los festivos importados se resaltan en amarillo antes de seleccionarlos. Pasa el cursor por un festivo para ver su nombre.</p>
-  </section>
 
-  <section class="months" id="months" aria-label="Calendarios anterior, actual y posterior"></section>
+<section class="panel">
+<div class="controls">
+<div class="field">
+<label for="zone">Zona</label>
+<select id="zone">
+<option>Madrid</option>
+<option>Barcelona</option>
+<option>Galicia</option>
+<option>Valencia</option>
+<option>Bilbao</option>
+</select>
+</div>
 
-  <section class="panel">
-    <h2 style="margin:0 0 12px;font-size:1.1rem">Asignación y cálculo</h2>
-    <p class="note">Para cada día seleccionado puedes asignar Técnico A, Técnico B o ambos. Si trabajan ambos, cada uno cobra el importe completo de ese día.</p>
-    <div class="summary-grid">
-      <div class="metric"><small>Días de guardia seleccionados</small><strong id="daysCount">0</strong></div>
-      <div class="metric"><small>Importe Técnico A</small><strong id="totalA">0,00 €</strong></div>
-      <div class="metric"><small>Importe Técnico B</small><strong id="totalB">0,00 €</strong></div>
-    </div>
-    <p class="note" id="grandTotal" style="font-weight:700;margin:12px 0">Coste total: 0,00 €</p>
-    <div class="daylist">
-      <table>
-        <thead><tr><th>Fecha</th><th>Tipo de día</th><th>Asignación</th><th>Importe por técnico</th></tr></thead>
-        <tbody id="assignments"><tr><td colspan="4" class="note">Todavía no hay días seleccionados.</td></tr></tbody>
-      </table>
-    </div>
-  </section>
+<div class="field">
+<label for="month">Mes de referencia</label>
+<input type="month" id="month">
+</div>
 
-  <section class="panel">
-    <h2 style="margin:0 0 8px;font-size:1.1rem">Festivos: cómo cargar los calendarios</h2>
-    <p class="note">Selecciona una zona y carga su archivo ICS descargado de la fuente oficial. Repite la operación para cada zona. Los festivos se guardan en este navegador para esa zona. El HTML no consulta directamente la web externa: así evitamos depender de permisos CORS o de una API que pueda cambiar.</p>
-    <p class="warning"><strong>Importante:</strong> esta primera versión no trae todavía festivos oficiales precargados. Hasta importar los archivos ICS, los días aparecerán como laborables o fin de semana. En Galicia, el calendario local debe corresponder al municipio concreto que utilicéis.</p>
-  </section>
+<div class="field">
+<label for="ics">Importar festivos (.ics)</label>
+<input type="file" id="ics" accept=".ics,text/calendar">
+</div>
+
+<button id="clear">Borrar guardias</button>
+</div>
+
+<div class="legend">
+<span class="key"><i class="swatch" style="background:#eef1f5"></i>Laborable</span>
+<span class="key"><i class="swatch" style="background:#dbeafe"></i>Fin de semana</span>
+<span class="key"><i class="swatch" style="background:#fde68a"></i>Festivo</span>
+<span class="key"><i class="swatch" style="background:#187653"></i>Guardia seleccionada</span>
+</div>
+<p class="note">Pulsa los días para seleccionar o quitar la guardia. Los festivos importados se calculan al doble.</p>
+</section>
+
+<section class="months" id="months"></section>
+
+<section class="panel">
+<h2>Averías por semana</h2>
+<p class="note">
+Introduce las averías de cada semana, de lunes a domingo.
+El precio se calcula automáticamente:
+<br>0–2 averías: 225 €
+<br>3–5 averías: 315 €
+<br>6–8 averías: 405 €
+<br>9 o más averías: 450 €
+</p>
+<div class="weeks" id="weeks"></div>
+</section>
+
+<section class="panel">
+<h2>Resultado del Técnico B</h2>
+<div class="metrics">
+<div class="metric">
+<small>Días de guardia seleccionados</small>
+<strong id="daysCount">0</strong>
+</div>
+<div class="metric">
+<small>Total a cobrar</small>
+<strong id="total">0,00 €</strong>
+</div>
+</div>
+
+<h3>Detalle de guardias</h3>
+<div class="daylist">
+<table>
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Tipo de día</th>
+<th>Averías</th>
+<th>Precio semanal</th>
+<th>Importe día</th>
+</tr>
+</thead>
+<tbody id="details"></tbody>
+</table>
+</div>
+</section>
+
+<section class="panel">
+<h3>Información sobre festivos</h3>
+<p class="note">
+Los festivos se importan mediante archivos ICS y se guardan en este navegador para cada zona.
+Los festivos nacionales, autonómicos y locales cuentan siempre como sábado o domingo: el doble.
+En Galicia debe utilizarse el calendario del municipio correspondiente.
+</p>
+</section>
+
 </main>
 
 <script>
 (() => {
-  const zoneEl = document.getElementById('zone');
-  const rateEl = document.getElementById('rate');
-  const monthEl = document.getElementById('yearMonth');
-  const monthsEl = document.getElementById('months');
-  const assignmentsEl = document.getElementById('assignments');
-  const holidayKey = z => 'guardias-holidays-' + z;
-  const selectionKey = z => 'guardias-selection-' + z;
-  let holidaysByZone = {};
-  let selectedByZone = {};
-  let reference = new Date();
-  reference = new Date(reference.getFullYear(), reference.getMonth(), 1);
-  monthEl.value = `${reference.getFullYear()}-${String(reference.getMonth()+1).padStart(2,'0')}`;
+const $ = id => document.getElementById(id);
 
-  function loadZoneData() {
-    const z = zoneEl.value;
-    try { holidaysByZone[z] = JSON.parse(localStorage.getItem(holidayKey(z)) || '{}'); } catch { holidaysByZone[z] = {}; }
-    try { selectedByZone[z] = JSON.parse(localStorage.getItem(selectionKey(z)) || '{}'); } catch { selectedByZone[z] = {}; }
-  }
-  function saveZoneData() {
-    const z = zoneEl.value;
-    localStorage.setItem(holidayKey(z), JSON.stringify(holidaysByZone[z] || {}));
-    localStorage.setItem(selectionKey(z), JSON.stringify(selectedByZone[z] || {}));
-  }
-  function dateKey(y,m,d){return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;}
-  function euro(n){return n.toLocaleString('es-ES',{style:'currency',currency:'EUR'});}
-  function holidayName(key){return (holidaysByZone[zoneEl.value] || {})[key] || '';}
-  function isWeekend(y,m,d){const w=new Date(y,m,d).getDay();return w===0||w===6;}
-  function isHoliday(key){return Boolean(holidayName(key));}
-  function dayUnits(y,m,d){const key=dateKey(y,m,d);return (isWeekend(y,m,d)||isHoliday(key))?2:1;}
-  function dayValue(y,m,d){return Number(rateEl.value)/9*dayUnits(y,m,d);}
-  function monthName(y,m){return new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(new Date(y,m,1));}
+const zone = $('zone');
+const monthInput = $('month');
+const months = $('months');
+const weeks = $('weeks');
+const details = $('details');
 
-  function render(){
-    const base = new Date(Number(monthEl.value.slice(0,4)), Number(monthEl.value.slice(5,7))-1, 1);
-    if (!monthEl.value || isNaN(base)) return;
-    monthsEl.innerHTML='';
-    for(let offset=-1;offset<=1;offset++){
-      const dt=new Date(base.getFullYear(),base.getMonth()+offset,1);
-      const y=dt.getFullYear(),m=dt.getMonth();
-      const wrap=document.createElement('article');wrap.className='month';
-      const title=document.createElement('h2');title.textContent=monthName(y,m);wrap.appendChild(title);
-      const weekdays=document.createElement('div');weekdays.className='weekdays';
-      ['L','M','X','J','V','S','D'].forEach(x=>{const el=document.createElement('div');el.textContent=x;weekdays.appendChild(el);});
-      wrap.appendChild(weekdays);
-      const grid=document.createElement('div');grid.className='days';
-      const offsetMonday=(new Date(y,m,1).getDay()+6)%7;
-      for(let i=0;i<offsetMonday;i++){const blank=document.createElement('div');blank.className='day other';grid.appendChild(blank);}
-      const count=new Date(y,m+1,0).getDate();
-      for(let d=1;d<=count;d++){
-        const key=dateKey(y,m,d), holiday=holidayName(key), weekend=isWeekend(y,m,d);
-        const btn=document.createElement('button');btn.type='button';btn.className='day';
-        const assignment=(selectedByZone[zoneEl.value]||{})[key];
-        if(weekend)btn.classList.add('weekend');
-        if(holiday)btn.classList.add('holiday');
-        if(assignment)btn.classList.add('selected');
-        btn.title=holiday ? `${key} · ${holiday}` : `${key}${weekend?' · Fin de semana':' · Laborable'}`;
-        const num=document.createElement('span');num.className='num';num.textContent=d;btn.appendChild(num);
-        if(holiday){const tag=document.createElement('span');tag.className='tag';tag.textContent='Festivo';btn.appendChild(tag);}
-        else if(assignment){const tag=document.createElement('span');tag.className='tag';tag.textContent=assignment==='AB'?'A+B':`Técnico ${assignment}`;btn.appendChild(tag);}
-        btn.addEventListener('click',()=>{
-          const data=selectedByZone[zoneEl.value] || (selectedByZone[zoneEl.value]={});
-          if(data[key]) delete data[key]; else data[key]='A';
-          saveZoneData();render();
-        });
-        grid.appendChild(btn);
-      }
-      wrap.appendChild(grid);monthsEl.appendChild(wrap);
-    }
-    renderAssignments();
-  }
+let holidays = {};
+let selected = {};
+let incidents = {};
 
-  function renderAssignments(){
-    const data=selectedByZone[zoneEl.value]||{};
-    const entries=Object.keys(data).sort();
-    let a=0,b=0;
-    assignmentsEl.innerHTML='';
-    if(!entries.length){assignmentsEl.innerHTML='<tr><td colspan="4" class="note">Todavía no hay días seleccionados.</td></tr>';}
-    entries.forEach(key=>{
-      const [y,mo,d]=key.split('-').map(Number), value=dayValue(y,mo-1,d), units=dayUnits(y,mo-1,d);
-      const ass=data[key];
-      if(ass==='A'||ass==='AB')a+=value;
-      if(ass==='B'||ass==='AB')b+=value;
-      const tr=document.createElement('tr');
-      const dateTd=document.createElement('td');dateTd.textContent=new Date(y,mo-1,d).toLocaleDateString('es-ES',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
-      const typeTd=document.createElement('td');typeTd.textContent=isHoliday(key)?'Festivo (doble)':isWeekend(y,mo-1,d)?'Fin de semana (doble)':'Laborable';
-      const selectTd=document.createElement('td');const sel=document.createElement('select');
-      [['A','Técnico A'],['B','Técnico B'],['AB','Ambos']].forEach(([v,l])=>{const op=document.createElement('option');op.value=v;op.textContent=l;sel.appendChild(op);});
-      sel.value=ass;sel.addEventListener('change',()=>{data[key]=sel.value;saveZoneData();render();});selectTd.appendChild(sel);
-      const valueTd=document.createElement('td');valueTd.textContent=euro(value);
-      tr.append(dateTd,typeTd,selectTd,valueTd);assignmentsEl.appendChild(tr);
-    });
-    document.getElementById('daysCount').textContent=entries.length;
-    document.getElementById('totalA').textContent=euro(a);
-    document.getElementById('totalB').textContent=euro(b);
-    document.getElementById('grandTotal').textContent='Coste total: '+euro(a+b);
-  }
+const storageKey = (type) => `guardias-${type}-${zone.value}`;
 
-  function parseICS(text){
-    const unfolded=text.replace(/\r?\n[ \t]/g,'');
-    const events={};let current=null;
-    unfolded.split(/\r?\n/).forEach(line=>{
-      if(line==='BEGIN:VEVENT')current={};
-      else if(line==='END:VEVENT'&&current){
-        if(current.date)events[current.date]=current.summary||'Festivo';
-        current=null;
-      } else if(current){
-        const idx=line.indexOf(':');if(idx<0)return;
-        const prop=line.slice(0,idx),value=line.slice(idx+1);
-        if(prop.startsWith('DTSTART')){
-          const match=value.match(/^(\d{4})(\d{2})(\d{2})/);
-          if(match)current.date=`${match[1]}-${match[2]}-${match[3]}`;
-        }
-        if(prop.startsWith('SUMMARY'))current.summary=value.replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\n/g,' ');
-      }
-    });
-    return events;
-  }
+function load(){
+ try{holidays=JSON.parse(localStorage.getItem(storageKey('holidays'))||'{}')}catch{holidays={}}
+ try{selected=JSON.parse(localStorage.getItem(storageKey('selected'))||'{}')}catch{selected={}}
+ try{incidents=JSON.parse(localStorage.getItem(storageKey('incidents'))||'{}')}catch{incidents={}}
+}
 
-  document.getElementById('ics').addEventListener('change',async e=>{
-    const file=e.target.files[0];if(!file)return;
-    try{
-      const parsed=parseICS(await file.text());
-      holidaysByZone[zoneEl.value]=parsed;saveZoneData();render();
-      alert(`Se han importado ${Object.keys(parsed).length} fechas festivas para ${zoneEl.value}.`);
-    }catch(err){alert('No se ha podido leer el archivo ICS.');}
-    e.target.value='';
+function save(){
+ localStorage.setItem(storageKey('holidays'),JSON.stringify(holidays));
+ localStorage.setItem(storageKey('selected'),JSON.stringify(selected));
+ localStorage.setItem(storageKey('incidents'),JSON.stringify(incidents));
+}
+
+function key(y,m,d){
+ return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function monday(date){
+ const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+ d.setDate(d.getDate()-((d.getDay()+6)%7));
+ return key(d.getFullYear(),d.getMonth(),d.getDate());
+}
+
+function weekend(y,m,d){
+ const day=new Date(y,m,d).getDay();
+ return day===0||day===6;
+}
+
+function units(y,m,d){
+ return weekend(y,m,d)||holidays[key(y,m,d)]?2:1;
+}
+
+function price(week){
+ const n=Number(incidents[week]||0);
+ if(n<=2)return 225;
+ if(n<=5)return 315;
+ if(n<=8)return 405;
+ return 450;
+}
+
+function money(n){
+ return n.toLocaleString('es-ES',{
+  style:'currency',
+  currency:'EUR'
+ });
+}
+
+function weeksVisible(base){
+ const first=new Date(base.getFullYear(),base.getMonth()-1,1);
+ const last=new Date(base.getFullYear(),base.getMonth()+2,0);
+ first.setDate(first.getDate()-((first.getDay()+6)%7));
+ const result=[];
+ for(let d=new Date(first);d<=last;d.setDate(d.getDate()+7)){
+  result.push(key(d.getFullYear(),d.getMonth(),d.getDate()));
+ }
+ return result;
+}
+
+function renderWeeks(base){
+ weeks.innerHTML='';
+ weeksVisible(base).forEach(w=>{
+  const start=new Date(w+'T12:00:00');
+  const end=new Date(start);
+  end.setDate(end.getDate()+6);
+
+  const card=document.createElement('div');
+  card.className='week-card';
+
+  const title=document.createElement('strong');
+  title.textContent=`${start.toLocaleDateString('es-ES')} – ${end.toLocaleDateString('es-ES')}`;
+  
+  const label=document.createElement('label');
+  label.textContent='Número de averías';
+
+  const input=document.createElement('input');
+  input.type='number';
+  input.min='0';
+  input.step='1';
+  input.value=incidents[w]||0;
+
+  const info=document.createElement('small');
+  info.textContent='Precio: '+money(price(w));
+
+  input.addEventListener('change',()=>{
+   incidents[w]=Math.max(0,Math.floor(Number(input.value)||0));
+   save();
+   render();
   });
-  zoneEl.addEventListener('change',()=>{loadZoneData();render();});
-  rateEl.addEventListener('change',render);
-  monthEl.addEventListener('change',render);
-  document.getElementById('clear').addEventListener('click',()=>{
-    if(confirm('¿Quieres quitar todas las guardias seleccionadas de esta zona?')){
-      selectedByZone[zoneEl.value]={};saveZoneData();render();
-    }
+
+  card.append(title,label,input,info);
+  weeks.appendChild(card);
+ });
+}
+
+function renderCalendar(base){
+ months.innerHTML='';
+
+ for(let offset=-1;offset<=1;offset++){
+  const dt=new Date(base.getFullYear(),base.getMonth()+offset,1);
+  const y=dt.getFullYear(),m=dt.getMonth();
+
+  const box=document.createElement('article');
+  box.className='month';
+
+  const title=document.createElement('h2');
+  title.textContent=dt.toLocaleDateString('es-ES',{
+   month:'long',year:'numeric'
   });
-  loadZoneData();render();
+  box.appendChild(title);
+
+  const heading=document.createElement('div');
+  heading.className='weekdays';
+
+  ['L','M','X','J','V','S','D'].forEach(x=>{
+   const el=document.createElement('div');
+   el.textContent=x;
+   heading.appendChild(el);
+  });
+  box.appendChild(heading);
+
+  const grid=document.createElement('div');
+  grid.className='days';
+
+  const offsetDay=(new Date(y,m,1).getDay()+6)%7;
+
+  for(let i=0;i<offsetDay;i++){
+   const blank=document.createElement('div');
+   blank.className='day other';
+   grid.appendChild(blank);
+  }
+
+  const totalDays=new Date(y,m+1,0).getDate();
+
+  for(let d=1;d<=totalDays;d++){
+   const k=key(y,m,d);
+   const holiday=holidays[k];
+   const isWeekend=weekend(y,m,d);
+   const isSelected=!!selected[k];
+
+   const btn=document.createElement('button');
+   btn.type='button';
+   btn.className='day';
+
+   if(isWeekend)btn.classList.add('weekend');
+   if(holiday)btn.classList.add('holiday');
+   if(isSelected)btn.classList.add('selected');
+
+   btn.title=holiday?`${k}: ${holiday}`:k;
+
+   const num=document.createElement('span');
+   num.className='num';
+   num.textContent=d;
+   btn.appendChild(num);
+
+   if(holiday){
+    const tag=document.createElement('span');
+    tag.className='tag';
+    tag.textContent='Festivo';
+    btn.appendChild(tag);
+   }
+
+   btn.addEventListener('click',()=>{
+    if(selected[k])delete selected[k];
+    else selected[k]=true;
+    save();
+    render();
+   });
+
+   grid.appendChild(btn);
+  }
+
+  box.appendChild(grid);
+  months.appendChild(box);
+ }
+}
+
+function renderDetails(){
+ const dates=Object.keys(selected).sort();
+ details.innerHTML='';
+ let total=0;
+
+ if(!dates.length){
+  details.innerHTML='<tr><td colspan="5">No hay días seleccionados.</td></tr>';
+ }
+
+ dates.forEach(k=>{
+  const [y,m,d]=k.split('-').map(Number);
+  const week=monday(new Date(y,m-1,d));
+  const n=Number(incidents[week]||0);
+  const weeklyPrice=price(week);
+  const value=weeklyPrice/9*units(y,m-1,d);
+  total+=value;
+
+  const tr=document.createElement('tr');
+
+  const dateCell=document.createElement('td');
+  dateCell.textContent=new Date(y,m-1,d).toLocaleDateString('es-ES',{
+   weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'
+  });
+
+  const typeCell=document.createElement('td');
+  typeCell.textContent=holidays[k]?'Festivo (doble)':weekend(y,m-1,d)?'Fin de semana (doble)':'Laborable';
+
+  const incidentCell=document.createElement('td');
+  incidentCell.textContent=n;
+
+  const priceCell=document.createElement('td');
+  priceCell.textContent=money(weeklyPrice);
+
+  const valueCell=document.createElement('td');
+  valueCell.textContent=money(value);
+
+  tr.append(dateCell,typeCell,incidentCell,priceCell,valueCell);
+  details.appendChild(tr);
+ });
+
+ $('daysCount').textContent=dates.length;
+ $('total').textContent=money(total);
+}
+
+function render(){
+ if(!monthInput.value)return;
+ const [y,m]=monthInput.value.split('-').map(Number);
+ const base=new Date(y,m-1,1);
+
+ renderCalendar(base);
+ renderWeeks(base);
+ renderDetails();
+}
+
+function parseICS(text){
+ const unfolded=text.replace(/\r?\n[ \t]/g,'');
+ const result={};
+ let event=null;
+
+ unfolded.split(/\r?\n/).forEach(line=>{
+  if(line==='BEGIN:VEVENT')event={};
+  else if(line==='END:VEVENT'&&event){
+   if(event.date)result[event.date]=event.name||'Festivo';
+   event=null;
+  }else if(event){
+   const i=line.indexOf(':');
+   if(i<0)return;
+   const prop=line.slice(0,i);
+   const value=line.slice(i+1);
+
+   if(prop.startsWith('DTSTART')){
+    const match=value.match(/^(\d{4})(\d{2})(\d{2})/);
+    if(match)event.date=`${match[1]}-${match[2]}-${match[3]}`;
+   }
+   if(prop.startsWith('SUMMARY')){
+    event.name=value.replace(/\\,/g,',').replace(/\\;/g,';');
+   }
+  }
+ });
+ return result;
+}
+
+$('ics').addEventListener('change',async e=>{
+ const file=e.target.files[0];
+ if(!file)return;
+
+ try{
+  holidays=parseICS(await file.text());
+  save();
+  render();
+  alert('Festivos importados: '+Object.keys(holidays).length);
+ }catch{
+  alert('No se ha podido leer el archivo ICS.');
+ }
+ e.target.value='';
+});
+
+zone.addEventListener('change',()=>{
+ load();
+ render();
+});
+
+monthInput.addEventListener('change',render);
+
+$('clear').addEventListener('click',()=>{
+ if(confirm('¿Borrar todos los días seleccionados de esta zona?')){
+  selected={};
+  save();
+  render();
+ }
+});
+
+const now=new Date();
+monthInput.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+load();
+render();
+
 })();
 </script>
 </body>
