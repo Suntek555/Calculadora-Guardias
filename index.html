@@ -5,416 +5,861 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calculadora de guardias</title>
+
 <style>
-*{box-sizing:border-box}
-body{font-family:Arial,sans-serif;margin:0;background:#f3f5f8;color:#253247}
-header{background:#172b4d;color:white;padding:22px}
-header h1{margin:0 0 6px}
-main{max-width:1150px;margin:20px auto;padding:0 14px 35px}
-.panel{background:white;border:1px solid #e0e5ed;border-radius:12px;padding:16px;margin-bottom:16px}
-.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
-.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
-label{font-size:14px;font-weight:bold}
-input,select,button{padding:10px;border:1px solid #cbd3df;border-radius:8px;font:inherit}
-button{cursor:pointer}
-.legend{display:flex;gap:13px;flex-wrap:wrap;font-size:13px;margin-top:14px}
-.key{display:flex;align-items:center;gap:5px}
-.swatch{width:16px;height:16px;border-radius:4px}
-.months{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.month{background:white;border:1px solid #e0e5ed;border-radius:12px;padding:12px}
-.month h2{text-align:center;text-transform:capitalize;font-size:17px}
-.weekdays,.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.weekdays div{text-align:center;font-size:12px;color:#64748b;padding:5px}
-.day{min-width:0;min-height:46px;border:1px solid transparent;border-radius:7px;background:#eef1f5;color:#344054;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3px 0}
-.day.weekend{background:#dbeafe;color:#1e3a8a}
-.day.holiday{background:#fde68a;color:#78350f;border-color:#e9bd39}
-.day.selected-normal{background:#176b45;color:white}
-.day.selected-weekend{background:#91d9a8;color:#174d2c;border-color:#60bd7d}
-.day.selected-holiday{background:#20a66a;color:white;border-color:#087d49}
-.day.other{visibility:hidden;pointer-events:none}
-.day .num{font-weight:bold}
-.day .tag{font-size:9px}
-.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.metric{background:#f1f5f9;padding:14px;border-radius:9px}
-.metric small{display:block;color:#64748b}
-.metric strong{font-size:24px}
-.note{font-size:13px;color:#64748b;line-height:1.5}
-@media(max-width:850px){.months{grid-template-columns:1fr}}
-@media(max-width:480px){.metrics{grid-template-columns:1fr}.day{min-height:42px}}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f3f5f8;
+  color: #253247;
+}
+
+header {
+  background: #172b4d;
+  color: white;
+  padding: 22px;
+}
+
+header h1 {
+  margin: 0 0 6px;
+}
+
+main {
+  max-width: 1250px;
+  margin: 20px auto;
+  padding: 0 14px 35px;
+}
+
+.panel {
+  background: white;
+  border: 1px solid #e0e5ed;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 180px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+select, button {
+  padding: 10px;
+  border: 1px solid #cbd3df;
+  border-radius: 8px;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.legend {
+  display: flex;
+  gap: 13px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  margin-top: 14px;
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+/* Navegación de calendarios */
+
+.calendar-navigation {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.nav-arrow {
+  width: 44px;
+  height: 52px;
+  font-size: 22px;
+  font-weight: bold;
+  background: #172b4d;
+  color: white;
+  border: none;
+  border-radius: 9px;
+}
+
+.nav-arrow:hover {
+  background: #294875;
+}
+
+.months {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.month {
+  background: white;
+  border: 1px solid #e0e5ed;
+  border-radius: 12px;
+  padding: 12px;
+  min-width: 0;
+}
+
+.month h2 {
+  text-align: center;
+  text-transform: capitalize;
+  font-size: 17px;
+  margin: 8px 0 14px;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.weekdays div {
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  padding: 5px 0;
+}
+
+.day {
+  min-width: 0;
+  min-height: 46px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: #eef1f5;
+  color: #344054;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 0;
+}
+
+.day.weekend {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+.day.holiday {
+  background: #fde68a;
+  color: #78350f;
+  border-color: #e9bd39;
+}
+
+.day.selected-normal {
+  background: #176b45;
+  color: white;
+}
+
+.day.selected-weekend {
+  background: #91d9a8;
+  color: #174d2c;
+  border-color: #60bd7d;
+}
+
+.day.selected-holiday {
+  background: #20a66a;
+  color: white;
+  border-color: #087d49;
+}
+
+.day.other {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.day .num {
+  font-weight: bold;
+}
+
+.day .tag {
+  font-size: 9px;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.metric {
+  background: #f1f5f9;
+  padding: 14px;
+  border-radius: 9px;
+}
+
+.metric small {
+  display: block;
+  color: #64748b;
+}
+
+.metric strong {
+  font-size: 24px;
+}
+
+.note {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+table th,
+table td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+@media(max-width: 950px) {
+  .months {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media(max-width: 480px) {
+  .calendar-navigation {
+    grid-template-columns: 34px minmax(0, 1fr) 34px;
+    gap: 5px;
+  }
+
+  .nav-arrow {
+    width: 34px;
+    height: 45px;
+    font-size: 17px;
+  }
+
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .day {
+    min-height: 42px;
+  }
+
+  .month {
+    padding: 8px;
+  }
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>Calculadora de guardias</h1>
-<p>Selección de días y cálculo automático del importe</p>
+  <h1>Calculadora de guardias</h1>
+  <p>Selección de días y cálculo automático del importe</p>
 </header>
 
 <main>
 
-<section class="panel">
-<div class="controls">
-<div class="field">
-<label for="zone">Zona</label>
-<select id="zone">
-<option>Madrid</option>
-<option>Barcelona</option>
-<option>Galicia</option>
-<option>Valencia</option>
-<option>Bilbao</option>
-</select>
-</div>
+  <section class="panel">
 
-<div class="field">
-<label for="month">Mes de referencia</label>
-<input type="month" id="month">
-</div>
+    <div class="controls">
 
-<div class="field">
-<label for="rate">Tramo de guardia</label>
-<select id="rate">
-<option value="225">0–2 averías · 225 €</option>
-<option value="315">3–5 averías · 315 €</option>
-<option value="405" selected>6–8 averías · 405 €</option>
-<option value="450">9 o más averías · 450 €</option>
-</select>
-</div>
+      <div class="field">
+        <label for="zone">Zona</label>
+        <select id="zone">
+          <option>Madrid</option>
+          <option>Barcelona</option>
+          <option>Galicia</option>
+          <option>Valencia</option>
+          <option>Bilbao</option>
+        </select>
+      </div>
 
-<button id="clear">Borrar guardias</button>
-</div>
+      <div class="field">
+        <label for="rate">Tramo de guardia</label>
+        <select id="rate">
+          <option value="225">0–2 averías · 225 €</option>
+          <option value="315">3–5 averías · 315 €</option>
+          <option value="405" selected>6–8 averías · 405 €</option>
+          <option value="450">9 o más averías · 450 €</option>
+        </select>
+      </div>
 
-<div class="legend">
-<span class="key"><i class="swatch" style="background:#eef1f5"></i>Laborable</span>
-<span class="key"><i class="swatch" style="background:#dbeafe"></i>Fin de semana</span>
-<span class="key"><i class="swatch" style="background:#fde68a"></i>Festivo</span>
-<span class="key"><i class="swatch" style="background:#176b45"></i>Guardia laborable</span>
-<span class="key"><i class="swatch" style="background:#91d9a8"></i>Guardia fin de semana</span>
-<span class="key"><i class="swatch" style="background:#20a66a"></i>Guardia festivo</span>
-</div>
+      <button id="clear">Borrar guardias</button>
 
-<p class="note">Selecciona el tramo y marca los días de guardia en el calendario. Los festivos y fines de semana cuentan el doble.</p>
-</section>
+    </div>
 
-<section class="months" id="months"></section>
+    <div class="legend">
+      <span class="key">
+        <i class="swatch" style="background:#eef1f5"></i>
+        Laborable
+      </span>
 
-<section class="panel">
-<h2>Resultado del cálculo</h2>
-<div class="metrics">
-<div class="metric">
-<small>Días seleccionados</small>
-<strong id="daysCount">0</strong>
-</div>
-<div class="metric">
-<small>Unidades de guardia</small>
-<strong id="unitsCount">0</strong>
-</div>
-<div class="metric">
-<small>Precio del tramo</small>
-<strong id="rateValue">405,00 €</strong>
-</div>
-<div class="metric">
-<small>Importe total</small>
-<strong id="total">0,00 €</strong>
-</div>
-</div>
-</section>
+      <span class="key">
+        <i class="swatch" style="background:#dbeafe"></i>
+        Fin de semana
+      </span>
 
-<section class="panel">
-<h3>Detalle de los días seleccionados</h3>
-<div style="overflow-x:auto">
-<table style="width:100%;border-collapse:collapse;font-size:14px">
-<thead>
-<tr>
-<th style="text-align:left;padding:9px">Fecha</th>
-<th style="text-align:left;padding:9px">Tipo de día</th>
-<th style="text-align:left;padding:9px">Unidades</th>
-<th style="text-align:left;padding:9px">Importe</th>
-</tr>
-</thead>
-<tbody id="details"></tbody>
-</table>
-</div>
-</section>
+      <span class="key">
+        <i class="swatch" style="background:#fde68a"></i>
+        Festivo
+      </span>
 
-<section class="panel">
-<h3>Festivos nacionales y autonómicos de 2027</h3>
-<p class="note">Los festivos locales no están incluidos. Los festivos incorporados aparecen en amarillo y conservan su valor doble al seleccionarlos.</p>
-</section>
+      <span class="key">
+        <i class="swatch" style="background:#176b45"></i>
+        Guardia laborable
+      </span>
+
+      <span class="key">
+        <i class="swatch" style="background:#91d9a8"></i>
+        Guardia fin de semana
+      </span>
+
+      <span class="key">
+        <i class="swatch" style="background:#20a66a"></i>
+        Guardia festivo
+      </span>
+    </div>
+
+    <p class="note">
+      Selecciona el tramo y marca los días de guardia en el calendario.
+      Los festivos y fines de semana cuentan el doble.
+    </p>
+
+  </section>
+
+  <section class="calendar-navigation">
+
+    <button
+      id="prevMonth"
+      class="nav-arrow"
+      title="Mes anterior"
+      aria-label="Mes anterior"
+    >❮</button>
+
+    <div class="months" id="months"></div>
+
+    <button
+      id="nextMonth"
+      class="nav-arrow"
+      title="Mes siguiente"
+      aria-label="Mes siguiente"
+    >❯</button>
+
+  </section>
+
+  <section class="panel">
+
+    <h2>Resultado del cálculo</h2>
+
+    <div class="metrics">
+
+      <div class="metric">
+        <small>Días seleccionados</small>
+        <strong id="daysCount">0</strong>
+      </div>
+
+      <div class="metric">
+        <small>Unidades de guardia</small>
+        <strong id="unitsCount">0</strong>
+      </div>
+
+      <div class="metric">
+        <small>Precio del tramo</small>
+        <strong id="rateValue">405,00 €</strong>
+      </div>
+
+      <div class="metric">
+        <small>Importe total</small>
+        <strong id="total">0,00 €</strong>
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="panel">
+
+    <h3>Detalle de los días seleccionados</h3>
+
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:9px">Fecha</th>
+            <th style="text-align:left;padding:9px">Tipo de día</th>
+            <th style="text-align:left;padding:9px">Unidades</th>
+            <th style="text-align:left;padding:9px">Importe</th>
+          </tr>
+        </thead>
+
+        <tbody id="details"></tbody>
+
+      </table>
+    </div>
+
+  </section>
+
+  <section class="panel">
+    <h3>Festivos nacionales y autonómicos de 2027</h3>
+    <p class="note">
+      Los festivos locales no están incluidos. Los festivos incorporados
+      aparecen en amarillo y conservan su valor doble al seleccionarlos.
+    </p>
+  </section>
 
 </main>
 
 <script>
 (() => {
-const $=id=>document.getElementById(id);
-const zone=$('zone'),monthInput=$('month'),rateInput=$('rate');
-const months=$('months'),details=$('details');
 
-const holidays={
-Madrid:{
-'2027-01-01':'Año Nuevo',
-'2027-01-06':'Epifanía del Señor',
-'2027-03-19':'San José',
-'2027-03-25':'Jueves Santo',
-'2027-03-26':'Viernes Santo',
-'2027-05-01':'Fiesta del Trabajo',
-'2027-08-16':'Asunción (traslado)',
-'2027-10-12':'Fiesta Nacional',
-'2027-11-01':'Todos los Santos',
-'2027-12-06':'Día de la Constitución',
-'2027-12-08':'Inmaculada Concepción',
-'2027-12-25':'Navidad'
-},
-Barcelona:{
-'2027-01-01':'Año Nuevo',
-'2027-01-06':'Epifanía del Señor',
-'2027-03-26':'Viernes Santo',
-'2027-03-29':'Lunes de Pascua',
-'2027-05-01':'Fiesta del Trabajo',
-'2027-06-24':'San Juan',
-'2027-09-11':'Diada de Cataluña',
-'2027-10-12':'Fiesta Nacional',
-'2027-11-01':'Todos los Santos',
-'2027-12-06':'Día de la Constitución',
-'2027-12-08':'Inmaculada Concepción',
-'2027-12-25':'Navidad'
-},
-Galicia:{
-'2027-01-01':'Año Nuevo',
-'2027-01-06':'Epifanía del Señor',
-'2027-03-19':'San José',
-'2027-03-25':'Jueves Santo',
-'2027-03-26':'Viernes Santo',
-'2027-05-01':'Fiesta del Trabajo',
-'2027-05-17':'Día de las Letras Gallegas',
-'2027-10-12':'Fiesta Nacional',
-'2027-11-01':'Todos los Santos',
-'2027-12-06':'Día de la Constitución',
-'2027-12-08':'Inmaculada Concepción',
-'2027-12-25':'Navidad'
-},
-Valencia:{
-'2027-01-01':'Año Nuevo',
-'2027-01-06':'Epifanía del Señor',
-'2027-03-19':'San José',
-'2027-03-26':'Viernes Santo',
-'2027-03-29':'Lunes de Pascua',
-'2027-05-01':'Fiesta del Trabajo',
-'2027-10-09':'Día de la Comunitat Valenciana',
-'2027-10-12':'Fiesta Nacional',
-'2027-11-01':'Todos los Santos',
-'2027-12-06':'Día de la Constitución',
-'2027-12-08':'Inmaculada Concepción',
-'2027-12-25':'Navidad'
-},
-Bilbao:{
-'2027-01-01':'Año Nuevo',
-'2027-01-06':'Epifanía del Señor',
-'2027-03-25':'Jueves Santo',
-'2027-03-26':'Viernes Santo',
-'2027-03-29':'Lunes de Pascua',
-'2027-05-01':'Fiesta del Trabajo',
-'2027-10-12':'Fiesta Nacional',
-'2027-11-01':'Todos los Santos',
-'2027-12-06':'Día de la Constitución',
-'2027-12-08':'Inmaculada Concepción',
-'2027-12-25':'Navidad'
-}
-};
+  const $ = id => document.getElementById(id);
 
-let selected={};
+  const zone = $('zone');
+  const rateInput = $('rate');
+  const months = $('months');
+  const details = $('details');
 
-function storageKey(){return 'guardias-selected-'+zone.value}
+  // Mes que se muestra en el calendario central
+  let currentMonth = new Date();
+  currentMonth.setDate(1);
 
-function load(){
- try{selected=JSON.parse(localStorage.getItem(storageKey())||'{}')}
- catch{selected={}}
-}
+  // Festivos nacionales y autonómicos de 2027.
+  // No se incluyen festivos locales.
 
-function save(){
- localStorage.setItem(storageKey(),JSON.stringify(selected));
-}
+  const holidays = {
 
-function key(y,m,d){
- return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-}
+    Madrid: {
+      '2027-01-01': 'Año Nuevo',
+      '2027-01-06': 'Epifanía del Señor',
+      '2027-03-19': 'San José',
+      '2027-03-25': 'Jueves Santo',
+      '2027-03-26': 'Viernes Santo',
+      '2027-05-01': 'Fiesta del Trabajo',
+      '2027-08-16': 'Asunción (traslado)',
+      '2027-10-12': 'Fiesta Nacional',
+      '2027-11-01': 'Todos los Santos',
+      '2027-12-06': 'Día de la Constitución',
+      '2027-12-08': 'Inmaculada Concepción',
+      '2027-12-25': 'Navidad'
+    },
 
-function holiday(k){return (holidays[zone.value]||{})[k]||''}
+    Barcelona: {
+      '2027-01-01': 'Año Nuevo',
+      '2027-01-06': 'Epifanía del Señor',
+      '2027-03-26': 'Viernes Santo',
+      '2027-03-29': 'Lunes de Pascua',
+      '2027-05-01': 'Fiesta del Trabajo',
+      '2027-06-24': 'San Juan',
+      '2027-09-11': 'Diada de Cataluña',
+      '2027-10-12': 'Fiesta Nacional',
+      '2027-11-01': 'Todos los Santos',
+      '2027-12-06': 'Día de la Constitución',
+      '2027-12-08': 'Inmaculada Concepción',
+      '2027-12-25': 'Navidad'
+    },
 
-function weekend(y,m,d){
- const w=new Date(y,m,d).getDay();
- return w===0||w===6;
-}
+    Galicia: {
+      '2027-01-01': 'Año Nuevo',
+      '2027-01-06': 'Epifanía del Señor',
+      '2027-03-19': 'San José',
+      '2027-03-25': 'Jueves Santo',
+      '2027-03-26': 'Viernes Santo',
+      '2027-05-01': 'Fiesta del Trabajo',
+      '2027-05-17': 'Día de las Letras Gallegas',
+      '2027-10-12': 'Fiesta Nacional',
+      '2027-11-01': 'Todos los Santos',
+      '2027-12-06': 'Día de la Constitución',
+      '2027-12-08': 'Inmaculada Concepción',
+      '2027-12-25': 'Navidad'
+    },
 
-function units(y,m,d){
- return weekend(y,m,d)||holiday(key(y,m,d))?2:1;
-}
+    Valencia: {
+      '2027-01-01': 'Año Nuevo',
+      '2027-01-06': 'Epifanía del Señor',
+      '2027-03-19': 'San José',
+      '2027-03-26': 'Viernes Santo',
+      '2027-03-29': 'Lunes de Pascua',
+      '2027-05-01': 'Fiesta del Trabajo',
+      '2027-10-09': 'Día de la Comunitat Valenciana',
+      '2027-10-12': 'Fiesta Nacional',
+      '2027-11-01': 'Todos los Santos',
+      '2027-12-06': 'Día de la Constitución',
+      '2027-12-08': 'Inmaculada Concepción',
+      '2027-12-25': 'Navidad'
+    },
 
-function money(n){
- return n.toLocaleString('es-ES',{
-  style:'currency',currency:'EUR'
- });
-}
+    Bilbao: {
+      '2027-01-01': 'Año Nuevo',
+      '2027-01-06': 'Epifanía del Señor',
+      '2027-03-25': 'Jueves Santo',
+      '2027-03-26': 'Viernes Santo',
+      '2027-03-29': 'Lunes de Pascua',
+      '2027-05-01': 'Fiesta del Trabajo',
+      '2027-10-12': 'Fiesta Nacional',
+      '2027-11-01': 'Todos los Santos',
+      '2027-12-06': 'Día de la Constitución',
+      '2027-12-08': 'Inmaculada Concepción',
+      '2027-12-25': 'Navidad'
+    }
 
-function renderCalendar(base){
- months.innerHTML='';
+  };
 
- for(let offset=-1;offset<=1;offset++){
-  const dt=new Date(base.getFullYear(),base.getMonth()+offset,1);
-  const y=dt.getFullYear(),m=dt.getMonth();
+  // Días seleccionados, guardados por zona.
 
-  const box=document.createElement('article');
-  box.className='month';
+  let selected = {};
 
-  const title=document.createElement('h2');
-  title.textContent=dt.toLocaleDateString('es-ES',{
-   month:'long',year:'numeric'
-  });
-  box.appendChild(title);
-
-  const heading=document.createElement('div');
-  heading.className='weekdays';
-
-  ['L','M','X','J','V','S','D'].forEach(x=>{
-   const el=document.createElement('div');
-   el.textContent=x;
-   heading.appendChild(el);
-  });
-  box.appendChild(heading);
-
-  const grid=document.createElement('div');
-  grid.className='days';
-
-  const offsetDay=(new Date(y,m,1).getDay()+6)%7;
-  for(let i=0;i<offsetDay;i++){
-   const blank=document.createElement('div');
-   blank.className='day other';
-   grid.appendChild(blank);
+  function storageKey() {
+    return 'guardias-selected-' + zone.value;
   }
 
-  const totalDays=new Date(y,m+1,0).getDate();
+  function load() {
+    try {
+      selected = JSON.parse(
+        localStorage.getItem(storageKey()) || '{}'
+      );
+    } catch {
+      selected = {};
+    }
+  }
 
-  for(let d=1;d<=totalDays;d++){
-   const k=key(y,m,d);
-   const holidayName=holiday(k);
-   const isWeekend=weekend(y,m,d);
-   const isSelected=!!selected[k];
+  function save() {
+    localStorage.setItem(
+      storageKey(),
+      JSON.stringify(selected)
+    );
+  }
 
-   const btn=document.createElement('button');
-   btn.type='button';
-   btn.className='day';
+  // Formato de fecha YYYY-MM-DD
 
-   if(isSelected){
-    if(holidayName)btn.classList.add('selected-holiday');
-    else if(isWeekend)btn.classList.add('selected-weekend');
-    else btn.classList.add('selected-normal');
-   }else if(holidayName){
-    btn.classList.add('holiday');
-   }else if(isWeekend){
-    btn.classList.add('weekend');
-   }
+  function key(y, m, d) {
+    return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+  }
 
-   btn.title=holidayName?`${k}: ${holidayName}`:
-    isWeekend?`${k}: Fin de semana`:`${k}: Laborable`;
+  function holiday(k) {
+    return (holidays[zone.value] || {})[k] || '';
+  }
 
-   const num=document.createElement('span');
-   num.className='num';
-   num.textContent=d;
-   btn.appendChild(num);
+  function weekend(y, m, d) {
+    const w = new Date(y, m, d).getDay();
+    return w === 0 || w === 6;
+  }
 
-   if(holidayName){
-    const tag=document.createElement('span');
-    tag.className='tag';
-    tag.textContent='Festivo';
-    btn.appendChild(tag);
-   }
+  // Festivos y fines de semana cuentan doble.
 
-   btn.addEventListener('click',()=>{
-    if(selected[k])delete selected[k];
-    else selected[k]=true;
-    save();
+  function units(y, m, d) {
+    return weekend(y, m, d) || holiday(key(y, m, d)) ? 2 : 1;
+  }
+
+  function money(n) {
+    return n.toLocaleString('es-ES', {
+      style: 'currency',
+      currency: 'EUR'
+    });
+  }
+
+  // Dibuja los tres calendarios consecutivos.
+
+  function renderCalendar(base) {
+
+    months.innerHTML = '';
+
+    for (let offset = -1; offset <= 1; offset++) {
+
+      const dt = new Date(
+        base.getFullYear(),
+        base.getMonth() + offset,
+        1
+      );
+
+      const y = dt.getFullYear();
+      const m = dt.getMonth();
+
+      const box = document.createElement('article');
+      box.className = 'month';
+
+      const title = document.createElement('h2');
+
+      title.textContent = dt.toLocaleDateString('es-ES', {
+        month: 'long',
+        year: 'numeric'
+      });
+
+      box.appendChild(title);
+
+      const heading = document.createElement('div');
+      heading.className = 'weekdays';
+
+      ['L', 'M', 'X', 'J', 'V', 'S', 'D'].forEach(x => {
+        const el = document.createElement('div');
+        el.textContent = x;
+        heading.appendChild(el);
+      });
+
+      box.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'days';
+
+      const offsetDay = (
+        new Date(y, m, 1).getDay() + 6
+      ) % 7;
+
+      for (let i = 0; i < offsetDay; i++) {
+        const blank = document.createElement('div');
+        blank.className = 'day other';
+        grid.appendChild(blank);
+      }
+
+      const totalDays = new Date(y, m + 1, 0).getDate();
+
+      for (let d = 1; d <= totalDays; d++) {
+
+        const k = key(y, m, d);
+        const holidayName = holiday(k);
+        const isWeekend = weekend(y, m, d);
+        const isSelected = !!selected[k];
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'day';
+
+        if (isSelected) {
+
+          if (holidayName) {
+            btn.classList.add('selected-holiday');
+          } else if (isWeekend) {
+            btn.classList.add('selected-weekend');
+          } else {
+            btn.classList.add('selected-normal');
+          }
+
+        } else if (holidayName) {
+
+          btn.classList.add('holiday');
+
+        } else if (isWeekend) {
+
+          btn.classList.add('weekend');
+
+        }
+
+        btn.title = holidayName
+          ? `${k}: ${holidayName}`
+          : isWeekend
+            ? `${k}: Fin de semana`
+            : `${k}: Laborable`;
+
+        const num = document.createElement('span');
+        num.className = 'num';
+        num.textContent = d;
+        btn.appendChild(num);
+
+        if (holidayName) {
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.textContent = 'Festivo';
+          btn.appendChild(tag);
+        }
+
+        btn.addEventListener('click', () => {
+
+          if (selected[k]) {
+            delete selected[k];
+          } else {
+            selected[k] = true;
+          }
+
+          save();
+          render();
+
+        });
+
+        grid.appendChild(btn);
+
+      }
+
+      box.appendChild(grid);
+      months.appendChild(box);
+
+    }
+
+  }
+
+  // Calcula el importe y muestra el detalle.
+
+  function renderDetails() {
+
+    const dates = Object.keys(selected).sort();
+
+    details.innerHTML = '';
+
+    let total = 0;
+    let unitCount = 0;
+
+    const rate = Number(rateInput.value);
+
+    if (!dates.length) {
+      details.innerHTML = `
+        <tr>
+          <td colspan="4" style="padding:10px">
+            No hay días seleccionados.
+          </td>
+        </tr>
+      `;
+    }
+
+    dates.forEach(k => {
+
+      const [y, m, d] = k.split('-').map(Number);
+
+      const u = units(y, m - 1, d);
+      const value = rate / 9 * u;
+
+      total += value;
+      unitCount += u;
+
+      const tr = document.createElement('tr');
+
+      const dateCell = document.createElement('td');
+
+      dateCell.textContent = new Date(
+        y,
+        m - 1,
+        d
+      ).toLocaleDateString('es-ES', {
+        weekday: 'short',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+
+      const typeCell = document.createElement('td');
+
+      typeCell.textContent = holiday(k)
+        ? 'Festivo (doble)'
+        : weekend(y, m - 1, d)
+          ? 'Fin de semana (doble)'
+          : 'Laborable';
+
+      const unitCell = document.createElement('td');
+      unitCell.textContent = u;
+
+      const valueCell = document.createElement('td');
+      valueCell.textContent = money(value);
+
+      tr.append(
+        dateCell,
+        typeCell,
+        unitCell,
+        valueCell
+      );
+
+      details.appendChild(tr);
+
+    });
+
+    $('daysCount').textContent = dates.length;
+    $('unitsCount').textContent = unitCount;
+    $('rateValue').textContent = money(rate);
+    $('total').textContent = money(total);
+
+  }
+
+  // Actualiza calendarios y resultado.
+
+  function render() {
+
+    const base = new Date(
+      currentMonth.getFullYear(),
+      currentMonth.getMonth(),
+      1
+    );
+
+    renderCalendar(base);
+    renderDetails();
+
+  }
+
+  // Cambiar de zona conserva las selecciones de cada una.
+
+  zone.addEventListener('change', () => {
+    load();
     render();
-   });
-
-   grid.appendChild(btn);
-  }
-
-  box.appendChild(grid);
-  months.appendChild(box);
- }
-}
-
-function renderDetails(){
- const dates=Object.keys(selected).sort();
- details.innerHTML='';
- let total=0,unitCount=0;
- const rate=Number(rateInput.value);
-
- if(!dates.length){
-  details.innerHTML='<tr><td colspan="4" style="padding:10px">No hay días seleccionados.</td></tr>';
- }
-
- dates.forEach(k=>{
-  const [y,m,d]=k.split('-').map(Number);
-  const u=units(y,m-1,d);
-  const value=rate/9*u;
-  total+=value;
-  unitCount+=u;
-
-  const tr=document.createElement('tr');
-  const dateCell=document.createElement('td');
-  dateCell.textContent=new Date(y,m-1,d).toLocaleDateString('es-ES',{
-   weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'
   });
 
-  const typeCell=document.createElement('td');
-  typeCell.textContent=holiday(k)?'Festivo (doble)':
-   weekend(y,m-1,d)?'Fin de semana (doble)':'Laborable';
+  // Cambiar tramo recalcula todos los días seleccionados.
 
-  const unitCell=document.createElement('td');
-  unitCell.textContent=u;
+  rateInput.addEventListener('change', render);
 
-  const valueCell=document.createElement('td');
-  valueCell.textContent=money(value);
+  // Flecha para retroceder un mes.
 
-  tr.append(dateCell,typeCell,unitCell,valueCell);
-  details.appendChild(tr);
- });
+  $('prevMonth').addEventListener('click', () => {
 
- $('daysCount').textContent=dates.length;
- $('unitsCount').textContent=unitCount;
- $('rateValue').textContent=money(rate);
- $('total').textContent=money(total);
-}
+    currentMonth.setMonth(
+      currentMonth.getMonth() - 1
+    );
 
-function render(){
- if(!monthInput.value)return;
- const [y,m]=monthInput.value.split('-').map(Number);
- const base=new Date(y,m-1,1);
- renderCalendar(base);
- renderDetails();
-}
+    render();
 
-zone.addEventListener('change',()=>{
- load();
- render();
-});
+  });
 
-monthInput.addEventListener('change',render);
-rateInput.addEventListener('change',render);
+  // Flecha para avanzar un mes.
 
-$('clear').addEventListener('click',()=>{
- if(confirm('¿Borrar todos los días seleccionados de esta zona?')){
-  selected={};
-  save();
+  $('nextMonth').addEventListener('click', () => {
+
+    currentMonth.setMonth(
+      currentMonth.getMonth() + 1
+    );
+
+    render();
+
+  });
+
+  // Borrar todas las guardias de la zona actual.
+
+  $('clear').addEventListener('click', () => {
+
+    if (confirm('¿Borrar todos los días seleccionados de esta zona?')) {
+
+      selected = {};
+      save();
+      render();
+
+    }
+
+  });
+
+  // Inicio.
+
+  load();
   render();
- }
-});
 
-const now=new Date();
-monthInput.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-load();
-render();
 })();
 </script>
+
 </body>
 </html>
