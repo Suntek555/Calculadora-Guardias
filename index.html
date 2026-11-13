@@ -13,7 +13,7 @@ header h1{margin:0 0 6px}
 main{max-width:1150px;margin:20px auto;padding:0 14px 35px}
 .panel{background:white;border:1px solid #e0e5ed;border-radius:12px;padding:16px;margin-bottom:16px}
 .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
-.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:170px}
+.field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
 label{font-size:14px;font-weight:bold}
 input,select,button{padding:10px;border:1px solid #cbd3df;border-radius:8px;font:inherit}
 button{cursor:pointer}
@@ -34,19 +34,11 @@ button{cursor:pointer}
 .day.other{visibility:hidden;pointer-events:none}
 .day .num{font-weight:bold}
 .day .tag{font-size:9px}
-.weeks{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
-.week-card{border:1px solid #e0e5ed;border-radius:9px;padding:12px;background:#fafbfd}
-.week-card strong{display:block;margin-bottom:9px}
-.week-card small{display:block;margin-top:7px;color:#526078}
 .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .metric{background:#f1f5f9;padding:14px;border-radius:9px}
 .metric small{display:block;color:#64748b}
 .metric strong{font-size:24px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{text-align:left;padding:9px;border-bottom:1px solid #e5eaf0}
 .note{font-size:13px;color:#64748b;line-height:1.5}
-.daylist{overflow-x:auto}
-.warning{background:#fff7e6;border:1px solid #f2d28b;padding:11px;border-radius:8px}
 @media(max-width:850px){.months{grid-template-columns:1fr}}
 @media(max-width:480px){.metrics{grid-template-columns:1fr}.day{min-height:42px}}
 </style>
@@ -55,7 +47,7 @@ th,td{text-align:left;padding:9px;border-bottom:1px solid #e5eaf0}
 
 <header>
 <h1>Calculadora de guardias</h1>
-<p>Calendario, festivos y cálculo automático por averías semanales</p>
+<p>Selección de días y cálculo automático del importe</p>
 </header>
 
 <main>
@@ -65,18 +57,30 @@ th,td{text-align:left;padding:9px;border-bottom:1px solid #e5eaf0}
 <div class="field">
 <label for="zone">Zona</label>
 <select id="zone">
-<option value="Madrid">Madrid</option>
-<option value="Barcelona">Barcelona</option>
-<option value="Galicia">Galicia (A Coruña)</option>
-<option value="Valencia">Valencia</option>
-<option value="Bilbao">Bilbao</option>
+<option>Madrid</option>
+<option>Barcelona</option>
+<option>Galicia</option>
+<option>Valencia</option>
+<option>Bilbao</option>
 </select>
 </div>
+
 <div class="field">
 <label for="month">Mes de referencia</label>
 <input type="month" id="month">
 </div>
-<button id="clear">Borrar guardias seleccionadas</button>
+
+<div class="field">
+<label for="rate">Tramo de guardia</label>
+<select id="rate">
+<option value="225">0–2 averías · 225 €</option>
+<option value="315">3–5 averías · 315 €</option>
+<option value="405" selected>6–8 averías · 405 €</option>
+<option value="450">9 o más averías · 450 €</option>
+</select>
+</div>
+
+<button id="clear">Borrar guardias</button>
 </div>
 
 <div class="legend">
@@ -87,47 +91,44 @@ th,td{text-align:left;padding:9px;border-bottom:1px solid #e5eaf0}
 <span class="key"><i class="swatch" style="background:#91d9a8"></i>Guardia fin de semana</span>
 <span class="key"><i class="swatch" style="background:#20a66a"></i>Guardia festivo</span>
 </div>
-<p class="note">Pulsa cualquier día para seleccionar o quitar la guardia. Los festivos seleccionados conservan su valor doble. Pasa el cursor por un festivo para ver su nombre.</p>
+
+<p class="note">Selecciona el tramo y marca los días de guardia en el calendario. Los festivos y fines de semana cuentan el doble.</p>
 </section>
 
 <section class="months" id="months"></section>
 
 <section class="panel">
-<h2>Averías por semana</h2>
-<p class="note">
-Introduce las averías de cada semana, de lunes a domingo.
-El precio se calcula automáticamente para cada semana:
-<br><b>0–2 averías:</b> 225 €
-<br><b>3–5 averías:</b> 315 €
-<br><b>6–8 averías:</b> 405 €
-<br><b>9 o más averías:</b> 450 €
-</p>
-<div class="weeks" id="weeks"></div>
-</section>
-
-<section class="panel">
 <h2>Resultado del cálculo</h2>
 <div class="metrics">
 <div class="metric">
-<small>Días de guardia seleccionados</small>
+<small>Días seleccionados</small>
 <strong id="daysCount">0</strong>
+</div>
+<div class="metric">
+<small>Unidades de guardia</small>
+<strong id="unitsCount">0</strong>
+</div>
+<div class="metric">
+<small>Precio del tramo</small>
+<strong id="rateValue">405,00 €</strong>
 </div>
 <div class="metric">
 <small>Importe total</small>
 <strong id="total">0,00 €</strong>
 </div>
 </div>
+</section>
 
-<h3>Detalle de guardias</h3>
-<div class="daylist">
-<table>
+<section class="panel">
+<h3>Detalle de los días seleccionados</h3>
+<div style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:14px">
 <thead>
 <tr>
-<th>Fecha</th>
-<th>Tipo de día</th>
-<th>Averías de la semana</th>
-<th>Precio semanal</th>
-<th>Importe del día</th>
+<th style="text-align:left;padding:9px">Fecha</th>
+<th style="text-align:left;padding:9px">Tipo de día</th>
+<th style="text-align:left;padding:9px">Unidades</th>
+<th style="text-align:left;padding:9px">Importe</th>
 </tr>
 </thead>
 <tbody id="details"></tbody>
@@ -136,197 +137,121 @@ El precio se calcula automáticamente para cada semana:
 </section>
 
 <section class="panel">
-<h3>Calendario de festivos</h3>
-<p class="note">Festivos nacionales y autonómicos de 2027. No se incluyen festivos locales. Las fechas están incorporadas en el propio HTML, por lo que no tienes que importar archivos ni conectarte a ninguna web.</p>
-<p class="warning">Esta versión contiene los calendarios de 2027. Los festivos de otros años deberán incorporarse cuando estén publicados oficialmente.</p>
+<h3>Festivos nacionales y autonómicos de 2027</h3>
+<p class="note">Los festivos locales no están incluidos. Los festivos incorporados aparecen en amarillo y conservan su valor doble al seleccionarlos.</p>
 </section>
 
 </main>
 
 <script>
 (() => {
-const $ = id => document.getElementById(id);
-const zone = $('zone');
-const monthInput = $('month');
-const months = $('months');
-const weeks = $('weeks');
-const details = $('details');
+const $=id=>document.getElementById(id);
+const zone=$('zone'),monthInput=$('month'),rateInput=$('rate');
+const months=$('months'),details=$('details');
 
-const holidays2027 = {
- Madrid: {
-  '2027-01-01':'Año Nuevo',
-  '2027-01-06':'Epifanía del Señor',
-  '2027-03-19':'San José',
-  '2027-03-25':'Jueves Santo',
-  '2027-03-26':'Viernes Santo',
-  '2027-05-01':'Fiesta del Trabajo',
-  '2027-08-16':'Lunes siguiente a la Asunción',
-  '2027-10-12':'Fiesta Nacional de España',
-  '2027-11-01':'Todos los Santos',
-  '2027-12-06':'Día de la Constitución',
-  '2027-12-08':'Inmaculada Concepción',
-  '2027-12-25':'Navidad'
- },
- Barcelona: {
-  '2027-01-01':'Año Nuevo',
-  '2027-01-06':'Epifanía del Señor',
-  '2027-03-26':'Viernes Santo',
-  '2027-03-29':'Lunes de Pascua',
-  '2027-05-01':'Fiesta del Trabajo',
-  '2027-06-24':'San Juan',
-  '2027-09-11':'Diada Nacional de Cataluña',
-  '2027-10-12':'Fiesta Nacional de España',
-  '2027-11-01':'Todos los Santos',
-  '2027-12-06':'Día de la Constitución',
-  '2027-12-08':'Inmaculada Concepción',
-  '2027-12-25':'Navidad'
- },
- Galicia: {
-  '2027-01-01':'Año Nuevo',
-  '2027-01-06':'Epifanía del Señor',
-  '2027-03-19':'San José',
-  '2027-03-25':'Jueves Santo',
-  '2027-03-26':'Viernes Santo',
-  '2027-05-01':'Fiesta del Trabajo',
-  '2027-05-17':'Día de las Letras Gallegas',
-  '2027-10-12':'Fiesta Nacional de España',
-  '2027-11-01':'Todos los Santos',
-  '2027-12-06':'Día de la Constitución',
-  '2027-12-08':'Inmaculada Concepción',
-  '2027-12-25':'Navidad'
- },
- Valencia: {
-  '2027-01-01':'Año Nuevo',
-  '2027-01-06':'Epifanía del Señor',
-  '2027-03-19':'San José',
-  '2027-03-26':'Viernes Santo',
-  '2027-03-29':'Lunes de Pascua',
-  '2027-05-01':'Fiesta del Trabajo',
-  '2027-10-09':'Día de la Comunitat Valenciana',
-  '2027-10-12':'Fiesta Nacional de España',
-  '2027-11-01':'Todos los Santos',
-  '2027-12-06':'Día de la Constitución',
-  '2027-12-08':'Inmaculada Concepción',
-  '2027-12-25':'Navidad'
- },
- Bilbao: {
-  '2027-01-01':'Año Nuevo',
-  '2027-01-06':'Epifanía del Señor',
-  '2027-03-25':'Jueves Santo',
-  '2027-03-26':'Viernes Santo',
-  '2027-03-29':'Lunes de Pascua',
-  '2027-05-01':'Fiesta del Trabajo',
-  '2027-10-07':'Aniversario del primer Gobierno de Euskadi',
-  '2027-10-12':'Fiesta Nacional de España',
-  '2027-11-01':'Todos los Santos',
-  '2027-12-06':'Día de la Constitución',
-  '2027-12-08':'Inmaculada Concepción',
-  '2027-12-25':'Navidad'
- }
+const holidays={
+Madrid:{
+'2027-01-01':'Año Nuevo',
+'2027-01-06':'Epifanía del Señor',
+'2027-03-19':'San José',
+'2027-03-25':'Jueves Santo',
+'2027-03-26':'Viernes Santo',
+'2027-05-01':'Fiesta del Trabajo',
+'2027-08-16':'Asunción (traslado)',
+'2027-10-12':'Fiesta Nacional',
+'2027-11-01':'Todos los Santos',
+'2027-12-06':'Día de la Constitución',
+'2027-12-08':'Inmaculada Concepción',
+'2027-12-25':'Navidad'
+},
+Barcelona:{
+'2027-01-01':'Año Nuevo',
+'2027-01-06':'Epifanía del Señor',
+'2027-03-26':'Viernes Santo',
+'2027-03-29':'Lunes de Pascua',
+'2027-05-01':'Fiesta del Trabajo',
+'2027-06-24':'San Juan',
+'2027-09-11':'Diada de Cataluña',
+'2027-10-12':'Fiesta Nacional',
+'2027-11-01':'Todos los Santos',
+'2027-12-06':'Día de la Constitución',
+'2027-12-08':'Inmaculada Concepción',
+'2027-12-25':'Navidad'
+},
+Galicia:{
+'2027-01-01':'Año Nuevo',
+'2027-01-06':'Epifanía del Señor',
+'2027-03-19':'San José',
+'2027-03-25':'Jueves Santo',
+'2027-03-26':'Viernes Santo',
+'2027-05-01':'Fiesta del Trabajo',
+'2027-05-17':'Día de las Letras Gallegas',
+'2027-10-12':'Fiesta Nacional',
+'2027-11-01':'Todos los Santos',
+'2027-12-06':'Día de la Constitución',
+'2027-12-08':'Inmaculada Concepción',
+'2027-12-25':'Navidad'
+},
+Valencia:{
+'2027-01-01':'Año Nuevo',
+'2027-01-06':'Epifanía del Señor',
+'2027-03-19':'San José',
+'2027-03-26':'Viernes Santo',
+'2027-03-29':'Lunes de Pascua',
+'2027-05-01':'Fiesta del Trabajo',
+'2027-10-09':'Día de la Comunitat Valenciana',
+'2027-10-12':'Fiesta Nacional',
+'2027-11-01':'Todos los Santos',
+'2027-12-06':'Día de la Constitución',
+'2027-12-08':'Inmaculada Concepción',
+'2027-12-25':'Navidad'
+},
+Bilbao:{
+'2027-01-01':'Año Nuevo',
+'2027-01-06':'Epifanía del Señor',
+'2027-03-25':'Jueves Santo',
+'2027-03-26':'Viernes Santo',
+'2027-03-29':'Lunes de Pascua',
+'2027-05-01':'Fiesta del Trabajo',
+'2027-10-12':'Fiesta Nacional',
+'2027-11-01':'Todos los Santos',
+'2027-12-06':'Día de la Constitución',
+'2027-12-08':'Inmaculada Concepción',
+'2027-12-25':'Navidad'
+}
 };
 
-let selected = {};
-let incidents = {};
+let selected={};
 
-function storageKey(type){
- return `guardias-${type}-${zone.value}`;
-}
+function storageKey(){return 'guardias-selected-'+zone.value}
 
 function load(){
- try{
-  selected=JSON.parse(localStorage.getItem(storageKey('selected'))||'{}');
- }catch{selected={}}
- try{
-  incidents=JSON.parse(localStorage.getItem(storageKey('incidents'))||'{}');
- }catch{incidents={}}
+ try{selected=JSON.parse(localStorage.getItem(storageKey())||'{}')}
+ catch{selected={}}
 }
 
 function save(){
- localStorage.setItem(storageKey('selected'),JSON.stringify(selected));
- localStorage.setItem(storageKey('incidents'),JSON.stringify(incidents));
+ localStorage.setItem(storageKey(),JSON.stringify(selected));
 }
 
 function key(y,m,d){
  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 }
 
-function holiday(k){
- return (holidays2027[zone.value]||{})[k]||'';
-}
-
-function monday(date){
- const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
- d.setDate(d.getDate()-((d.getDay()+6)%7));
- return key(d.getFullYear(),d.getMonth(),d.getDate());
-}
+function holiday(k){return (holidays[zone.value]||{})[k]||''}
 
 function weekend(y,m,d){
- const day=new Date(y,m,d).getDay();
- return day===0||day===6;
+ const w=new Date(y,m,d).getDay();
+ return w===0||w===6;
 }
 
 function units(y,m,d){
  return weekend(y,m,d)||holiday(key(y,m,d))?2:1;
 }
 
-function price(week){
- const n=Number(incidents[week]||0);
- if(n<=2)return 225;
- if(n<=5)return 315;
- if(n<=8)return 405;
- return 450;
-}
-
 function money(n){
  return n.toLocaleString('es-ES',{
   style:'currency',currency:'EUR'
- });
-}
-
-function weeksVisible(base){
- const first=new Date(base.getFullYear(),base.getMonth()-1,1);
- const last=new Date(base.getFullYear(),base.getMonth()+2,0);
- first.setDate(first.getDate()-((first.getDay()+6)%7));
- const result=[];
- for(let d=new Date(first);d<=last;d.setDate(d.getDate()+7)){
-  result.push(key(d.getFullYear(),d.getMonth(),d.getDate()));
- }
- return result;
-}
-
-function renderWeeks(base){
- weeks.innerHTML='';
- weeksVisible(base).forEach(w=>{
-  const start=new Date(w+'T12:00:00');
-  const end=new Date(start);
-  end.setDate(end.getDate()+6);
-
-  const card=document.createElement('div');
-  card.className='week-card';
-
-  const title=document.createElement('strong');
-  title.textContent=`Semana ${start.toLocaleDateString('es-ES')} – ${end.toLocaleDateString('es-ES')}`;
-
-  const label=document.createElement('label');
-  label.textContent='Número de averías';
-
-  const input=document.createElement('input');
-  input.type='number';
-  input.min='0';
-  input.step='1';
-  input.value=incidents[w]||0;
-
-  const info=document.createElement('small');
-  info.textContent='Precio semanal: '+money(price(w));
-
-  input.addEventListener('change',()=>{
-   incidents[w]=Math.max(0,Math.floor(Number(input.value)||0));
-   save();
-   render();
-  });
-
-  card.append(title,label,input,info);
-  weeks.appendChild(card);
  });
 }
 
@@ -382,9 +307,10 @@ function renderCalendar(base){
     if(holidayName)btn.classList.add('selected-holiday');
     else if(isWeekend)btn.classList.add('selected-weekend');
     else btn.classList.add('selected-normal');
-   }else{
-    if(holidayName)btn.classList.add('holiday');
-    else if(isWeekend)btn.classList.add('weekend');
+   }else if(holidayName){
+    btn.classList.add('holiday');
+   }else if(isWeekend){
+    btn.classList.add('weekend');
    }
 
    btn.title=holidayName?`${k}: ${holidayName}`:
@@ -420,22 +346,21 @@ function renderCalendar(base){
 function renderDetails(){
  const dates=Object.keys(selected).sort();
  details.innerHTML='';
- let total=0;
+ let total=0,unitCount=0;
+ const rate=Number(rateInput.value);
 
  if(!dates.length){
-  details.innerHTML='<tr><td colspan="5">No hay días seleccionados.</td></tr>';
+  details.innerHTML='<tr><td colspan="4" style="padding:10px">No hay días seleccionados.</td></tr>';
  }
 
  dates.forEach(k=>{
   const [y,m,d]=k.split('-').map(Number);
-  const week=monday(new Date(y,m-1,d));
-  const n=Number(incidents[week]||0);
-  const weeklyPrice=price(week);
-  const value=weeklyPrice/9*units(y,m-1,d);
+  const u=units(y,m-1,d);
+  const value=rate/9*u;
   total+=value;
+  unitCount+=u;
 
   const tr=document.createElement('tr');
-
   const dateCell=document.createElement('td');
   dateCell.textContent=new Date(y,m-1,d).toLocaleDateString('es-ES',{
    weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'
@@ -445,20 +370,19 @@ function renderDetails(){
   typeCell.textContent=holiday(k)?'Festivo (doble)':
    weekend(y,m-1,d)?'Fin de semana (doble)':'Laborable';
 
-  const incidentCell=document.createElement('td');
-  incidentCell.textContent=n;
-
-  const priceCell=document.createElement('td');
-  priceCell.textContent=money(weeklyPrice);
+  const unitCell=document.createElement('td');
+  unitCell.textContent=u;
 
   const valueCell=document.createElement('td');
   valueCell.textContent=money(value);
 
-  tr.append(dateCell,typeCell,incidentCell,priceCell,valueCell);
+  tr.append(dateCell,typeCell,unitCell,valueCell);
   details.appendChild(tr);
  });
 
  $('daysCount').textContent=dates.length;
+ $('unitsCount').textContent=unitCount;
+ $('rateValue').textContent=money(rate);
  $('total').textContent=money(total);
 }
 
@@ -467,16 +391,16 @@ function render(){
  const [y,m]=monthInput.value.split('-').map(Number);
  const base=new Date(y,m-1,1);
  renderCalendar(base);
- renderWeeks(base);
  renderDetails();
 }
 
-$('zone').addEventListener('change',()=>{
+zone.addEventListener('change',()=>{
  load();
  render();
 });
 
 monthInput.addEventListener('change',render);
+rateInput.addEventListener('change',render);
 
 $('clear').addEventListener('click',()=>{
  if(confirm('¿Borrar todos los días seleccionados de esta zona?')){
@@ -486,7 +410,8 @@ $('clear').addEventListener('click',()=>{
  }
 });
 
-monthInput.value='2027-01';
+const now=new Date();
+monthInput.value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
 load();
 render();
 })();
